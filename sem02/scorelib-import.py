@@ -26,15 +26,22 @@ class Person( DBItem ):
         super().__init__( conn )
         self.name = re.sub( '\([0-9+-]+\)', '', string )
         # TODO: years born/died
-        self.born = re.sub('', '', string)
-        self.died = re.sub('', '', string)
+        self.born = None
+        self.died = None
+		
+		m = re.search( "([0-9]+)--([0-9]+)", string )
+        if m is not None:
+            self.born = int(m.group(1).strip())
+            self.died = int(m.group(2).strip())
 
     def fetch_id( self ):
-        self.cursor.execute( "select id from person where name = ?", (self.name,) )
+        self.cursor.execute( "select id from person where name = ? and born = ? and died = ?", 
+		(self.name, self.born, self.died) )
         self.id = self.cursor.fetchone()
 
     def do_store( self ):
-        self.cursor.execute( "insert into person (name) values (?)", (self.name,) )
+        self.cursor.execute( "insert into person (name, born, died) values (?, ?, ?)", 
+		(self.name, self.born, self.died) )
 
 class Score( DBItem ):
     
