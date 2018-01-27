@@ -11,18 +11,21 @@ name = sys.argv[1]
 
 con = sqlite3.connect('scorelib.dat')
 cur = con.cursor()
-cur.execute("select person.name, score.name "
-			"from score_author join score on score_author.score=score.id "
-			"join person on person.id=score_author.composer "
+res = cur.execute("select person.name, score.name, print.id "
+			"from person left join score_author on person.id=score_author.composer "
+			"join score on score_author.score=score.id "
+                        "join edition on edition.score = score.id "
+                        "join print on print.edition = edition.id "
 			"where person.name like ? order by person.name", ("%{}%".format(name),))
 
-scores = {}
+out = []
+for row in res:
+    d = {}
+    d['Composer'] = row[0]
+    d['Score'] = row[1]
+    d['Print Number'] = row[2]
+    
+    out.append(d)
 
-for row in cur:
-
-    if row[0] not in scores:
-        scores[row[0]] = []
-
-    scores[row[0]].append(row[1])
-
-json.dump(scores, sys.stdout, indent=2)
+json.dump(out, sys.stdout, indent=2)
+con.close()

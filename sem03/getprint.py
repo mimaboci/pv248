@@ -24,5 +24,5 @@ composers = []
 for row in cur:
     composers.append(row)
 
-d = {"print": printId, "composers": composers}
-json.dump(d, sys.stdout, indent=2)
+json.dump(composers, sys.stdout, indent=2)
+con.close()
