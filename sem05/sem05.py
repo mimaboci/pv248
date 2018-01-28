@@ -16,13 +16,15 @@ class server(BaseHTTPRequestHandler):
         self.wfile.write(bytes("<p>%s</p>" %message, 'utf8'))
         self.wfile.write(bytes("</body></html>", 'utf8'))        
 
-def start():
-    address = ('localhost', 8000)
-    httpd = HTTPServer(address, server)
-    print("server running")
-    httpd.serve_forever()
+address = ('localhost', 8000)
+httpd = HTTPServer(address, server)
     
-def exit():
+def start():
+    print("server running")
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
     httpd.server_close()
     print("server stopped")
 
